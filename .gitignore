@@ -2,3 +2,5 @@
 bin/
 obj/
 FixedPointSharp.sln.DotSettings.user
+
+Tests/Output~/
