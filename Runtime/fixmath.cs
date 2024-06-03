@@ -119,6 +119,8 @@ namespace Paulsams.FixedPoint
         }
 
         /// <param name="num">Angle in radians</param>
+        /// <param name="sin">Output parameter for sin value</param>
+        /// <param name="cos">Output parameter for cos value</param>
         public static void SinCos(fp num, out fp sin, out fp cos)
         {
             num.value %= fp.pi2.value;
@@ -174,9 +176,7 @@ namespace Paulsams.FixedPoint
             var fractions = num.value & 0x000000000000FFFFL;
 
             if (fractions == 0)
-            {
                 return num;
-            }
 
             num.value = num.value >> fixlut.PRECISION << fixlut.PRECISION;
             num.value += fixlut.ONE;
@@ -294,6 +294,17 @@ namespace Paulsams.FixedPoint
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fp Pow2(int power) =>
             new fp(fixlut.ONE << power);
+      
+        /// <summary>Returns the fp2 row vector result of a matrix multiplication between a fp2 row vector and a fp2x2 matrix.</summary>
+        /// <param name="a">Left hand side argument of the matrix multiply.</param>
+        /// <param name="b">Right hand side argument of the matrix multiply.</param>
+        /// <returns>The computed matrix multiplication.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fp2 mul(fp2 a, fp2x2 b) =>
+            new fp2(
+                a.x * b.c0.x + a.y * b.c0.y,
+                a.x * b.c1.x + a.y * b.c1.y
+            );
 
         public static fp Exp(fp num)
         {
