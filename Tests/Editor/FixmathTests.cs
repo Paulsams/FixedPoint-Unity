@@ -313,18 +313,58 @@ namespace Paulsams.FixedPoint.Tests
         }
 
         [Test]
-        public void MulTest()
+        public void MulAndDivideTest()
         {
             fp a = 5;
 
-            var result1 = a * fp._0_01;
-            Assert.AreEqual(result1.AsFloat, 0.05f, 0.01f);
+            {
+                var result1 = a * fp._0_01;
+                Assert.AreEqual(result1.AsFloat, 0.05f, 0.01f);
 
-            var result2 = fp._0_01 * a;
-            Assert.AreEqual(result2.AsFloat, 0.05f, 0.01f);
+                var result2 = fp._0_01 * a;
+                Assert.AreEqual(result2.AsFloat, 0.05f, 0.01f);
 
-            var result3 = fp._0_01 * fp._0_01;
-            Assert.AreEqual(result3.AsFloat, 0.001f, 0.002f);
+                var result3 = fp._0_01 * fp._0_01;
+                Assert.AreEqual(result3.AsFloat, 0.001f, 0.002f);
+            }
+
+            {
+                var result1 = a / fp._2;
+                Assert.AreEqual(result1.AsFloat, 2.5f, 0.01f);
+
+                var result2 = fp._0_01 / a;
+                Assert.AreEqual(result2.AsFloat, 0.002f, 0.002f);
+            }
+
+            {
+                var result1 = a / new fp2(10, 5);
+                Assert.AreEqual(result1.x.AsFloat, 0.5f, 0.01f);
+                Assert.AreEqual(result1.y.AsFloat, 1f, 0.01f);
+            }
+        }
+
+        [Test]
+        public void PlusAndMinisTest()
+        {
+            fp a = 5;
+
+            var result1 = a + fp._0_01;
+            Assert.AreEqual(result1.AsFloat, 5.01f, 0.01f);
+
+            var result2 = a + fp._0_01;
+            Assert.AreEqual(result2.AsFloat, 5.01f, 0.01f);
+
+            var result3 = fp._0_01 + fp._0_01;
+            Assert.AreEqual(result3.AsFloat, 0.02f, 0.002f);
+
+            var result4 = a + fp._0_01;
+            Assert.AreEqual(result4.AsFloat, 5.01f, 0.01f);
+
+            var result5 = a + fp._0_01;
+            Assert.AreEqual(result5.AsFloat, 5.01f, 0.01f);
+
+            var result6 = fp._0_01 + fp._0_01;
+            Assert.AreEqual(result6.AsFloat, 0.02f, 0.002f);
         }
 
         [Test]

@@ -105,23 +105,19 @@ namespace Paulsams.FixedPoint
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fp2 operator /(fp b, fp2 a)
         {
-            a.x.value = (a.x.value << fixlut.PRECISION) / b.value;
-            a.y.value = (a.y.value << fixlut.PRECISION) / b.value;
+            a.x.value = (b.value << fixlut.PRECISION) / a.x.value;
+            a.y.value = (b.value << fixlut.PRECISION) / a.y.value;
 
             return a;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(fp2 a, fp2 b)
-        {
-            return a.x.value == b.x.value && a.y.value == b.y.value;
-        }
+        public static bool operator ==(fp2 a, fp2 b) =>
+            a.x.value == b.x.value && a.y.value == b.y.value;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(fp2 a, fp2 b)
-        {
-            return a.x.value != b.x.value || a.y.value != b.y.value;
-        }
+        public static bool operator !=(fp2 a, fp2 b) =>
+            a.x.value != b.x.value || a.y.value != b.y.value;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static explicit operator int2(fp2 value) =>
