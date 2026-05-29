@@ -58,6 +58,7 @@ namespace Paulsams.FixedPoint.Tests
         [Test]
         public void SlowStringParsingTest()
         {
+            Assert.AreEqual(fp.Parse(null).AsFloatRounded, 0f, 0f);
             Assert.AreEqual(fp.Parse("5").AsFloatRounded, 5f, 0.0001f);
             Assert.AreEqual(fp.Parse("5.").AsFloatRounded, 5f, 0.0001f);
             Assert.AreEqual(fp.Parse(".1").AsFloatRounded, 0.1f, 0.0001f);

@@ -1,6 +1,6 @@
 {
   "name": "com.paulsams.fixed-point",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "Fixed Point",
   "description": "About Fixed point math with 48.16 precision Unity oriented.",
   "dependencies": {

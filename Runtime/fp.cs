@@ -60,6 +60,8 @@ namespace Paulsams.FixedPoint
         public static readonly fp epsilon = new fp(1);
         public static readonly fp e = new fp(178145L);
 
+        private static readonly char[] _fractionPadZeros = new char[5];
+
         [FieldOffset(0)] public long value;
 
         public long AsLong => value >> fixlut.PRECISION;
@@ -310,9 +312,9 @@ namespace Paulsams.FixedPoint
         public static fp ParseUnsafe(float value) =>
             new fp((long)(value * fixlut.ONE + 0.5f * (value < 0 ? -1 : 1)));
 
-        public static fp ParseUnsafe(string value)
+        public static fp ParseUnsafe(ReadOnlySpan<char> value)
         {
-            var doubleValue = double.Parse(value, CultureInfo.InvariantCulture);
+            var doubleValue = double.Parse(value, provider: CultureInfo.InvariantCulture);
             var longValue = (long)(doubleValue * fixlut.ONE + 0.5d * (doubleValue < 0 ? -1 : 1));
             return new fp(longValue);
         }
@@ -321,9 +323,9 @@ namespace Paulsams.FixedPoint
         /// Deterministically parses FP value out of a string
         /// </summary>
         /// <param name="value">Trimmed string to parse</param>
-        public static fp Parse(string value)
+        public static fp Parse(ReadOnlySpan<char> value)
         {
-            if (string.IsNullOrEmpty(value))
+            if (value.IsEmpty)
                 return _0;
 
             bool negative;
@@ -338,34 +340,44 @@ namespace Paulsams.FixedPoint
             {
                 return startIndex == 0
                     ? ParseInteger(value)
-                    : -ParseInteger(value.Substring(startIndex, value.Length - startIndex));
+                    : -ParseInteger(value.Slice(startIndex, value.Length - startIndex));
             }
 
             var result = new fp();
 
             if (pointIndex > startIndex)
             {
-                var integerString = value.Substring(startIndex, pointIndex - startIndex);
+                var integerString = value.Slice(startIndex, pointIndex - startIndex);
                 result += ParseInteger(integerString);
             }
 
             if (pointIndex == value.Length - 1)
                 return negative ? -result : result;
 
-            var fractionString = value.Substring(pointIndex + 1, value.Length - pointIndex - 1);
+            var fractionString = value.Slice(pointIndex + 1, value.Length - pointIndex - 1);
             if (fractionString.Length > 0)
                 result += ParseFractions(fractionString);
 
             return negative ? -result : result;
         }
 
-        private static fp ParseInteger(string format) =>
-            Parse(long.Parse(format, CultureInfo.InvariantCulture));
+        private static fp ParseInteger(ReadOnlySpan<char> format) =>
+            Parse(long.Parse(format, provider: CultureInfo.InvariantCulture));
 
-        private static fp ParseFractions(string format)
+        private static fp ParseFractions(ReadOnlySpan<char> format)
         {
-            format = format.Length < 5 ? format.PadRight(5, '0') : format.Substring(0, 5);
-            return ParseRaw(long.Parse(format, CultureInfo.InvariantCulture) * 65536 / 100000);
+            if (format.Length < 5)
+            {
+                format.CopyTo(_fractionPadZeros);
+                Array.Fill(_fractionPadZeros, '0', format.Length, _fractionPadZeros.Length - format.Length);
+                format = _fractionPadZeros;
+            }
+            else
+            {
+                format = format[..5];
+            }
+
+            return ParseRaw(long.Parse(format, provider: CultureInfo.InvariantCulture) * 65536 / 100000);
         }
 
         public class Comparer : IComparer<fp>
